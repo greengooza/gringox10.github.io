@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>views.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008080; font-weight: bold;}
+.s3 { color: #0000ff;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+views.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span>django.http <span class="s0">import </span>Http404, HttpResponseRedirect
+<span class="s0">from </span>django.shortcuts <span class="s0">import </span>render
+
+<span class="s0">from </span>django.urls <span class="s0">import </span>reverse
+
+<span class="s0">from </span>.models <span class="s0">import </span>Article
+
+<span class="s0">def </span>index(request):
+    latest_articles_list = Article.objects.order_by(<span class="s2">'-pub_date'</span>)[:<span class="s3">5</span>]
+    <span class="s0">return </span>render(request, <span class="s2">'articles/list.html'</span>, {<span class="s2">'latest_articles_list'</span>: latest_articles_list})
+
+<span class="s0">def </span>detail(request, article_id):
+    <span class="s0">try</span>:
+        a = Article.objects.get( id = article_id)
+    <span class="s0">except</span>:
+        <span class="s0">raise </span>Http404(<span class="s2">&quot;Статья не найдена!&quot;</span>)
+
+    latest_comments_list = a.comment_set.order_by(<span class="s2">'-id'</span>)[:<span class="s3">10</span>]
+
+    <span class="s0">return </span>render(request, <span class="s2">'articles/detail.html'</span>, {<span class="s2">'article'</span>: a, <span class="s2">'latest_comments_list'</span>: latest_comments_list})
+
+<span class="s0">def </span>leave_comment(request, article_id):
+    <span class="s0">try</span>:
+        a = Article.objects.get(id=article_id)
+    <span class="s0">except</span>:
+        <span class="s0">raise </span>Http404(<span class="s2">&quot;Статья не найдена!&quot;</span>)
+
+    a.comment_set.create(author_name = request.POST[<span class="s2">'name'</span>], comment_text = request.POST[<span class="s2">'text'</span>])
+
+    <span class="s0">return </span>HttpResponseRedirect(reverse(<span class="s2">'articles:detail'</span>, args = (a.id,)))
+</pre>
+</body>
+</html>

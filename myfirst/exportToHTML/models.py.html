@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>models.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #000080; font-weight: bold;}
+.s1 { color: #000000;}
+.s2 { color: #008080; font-weight: bold;}
+.s3 { color: #0000ff;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+models.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span>datetime
+<span class="s0">from </span>django.db <span class="s0">import </span>models
+
+<span class="s0">from </span>django.utils <span class="s0">import </span>timezone
+
+<span class="s0">class </span>Article (models.Model):
+    article_title = models.CharField(<span class="s2">'название статьи'</span>, max_length=<span class="s3">200</span>)
+    article_text = models.TextField(<span class="s2">'текст статьи'</span>)
+    pub_date = models.DateTimeField(<span class="s2">'дата публикации'</span>)
+
+    <span class="s0">def </span>__str__(self):
+        <span class="s0">return </span>self.article_title
+
+    <span class="s0">def </span>was_published_recently(self):
+        <span class="s0">return </span>self.pub_date &gt;= (timezone.now() - datetime.timedelta(days=<span class="s3">7</span>))
+
+    <span class="s0">class </span>Meta:
+        verbose_name = <span class="s2">'Статья'</span>
+        verbose_name_plural = <span class="s2">'Статьи'</span>
+
+<span class="s0">class </span>Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author_name = models.CharField(<span class="s2">'имя автора'</span>, max_length=<span class="s3">50</span>)
+    comment_text = models.CharField(<span class="s2">'текст комментария'</span>, max_length=<span class="s3">200</span>)
+
+    <span class="s0">def </span>__str__(self):
+        <span class="s0">return </span>self.author_name
+
+    <span class="s0">class </span>Meta:
+        verbose_name = <span class="s2">'Комментарий'</span>
+        verbose_name_plural = <span class="s2">'Комментарии'</span>
+</pre>
+</body>
+</html>
